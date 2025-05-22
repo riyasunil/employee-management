@@ -1,0 +1,134 @@
+Date: 20-05-2025
+
+1. Created an empty github repository for employee management.
+2. Cloned it locally.
+3. Created an gitignore file (right now empty.) 
+4. npm init -y
+   For starting a node project -> this command creates a package.json file (-y ==> give yes to everything)
+5. npx tsc --init   ==> initializes typescript
+6. npm i express typescript
+7. npm i --save-dev @types/node @types/express
+8. Create a server.ts
+    import express
+    create express server
+    add script -> "build" : "npx tsc",
+    "startServer" : "npx tsc && node dist/server.js"
+    create get and post methods 
+    
+    NOTE: 
+    a. To pass variables in the url:  :id
+    b. To access vars passed in url:  req.params.varName
+    c. Suppose in employees/id I am expecting a number, but I gave it as employees/Sarah, then if employees/Sarah page exists, it would be redirected to that page. 
+    d. when u define a class in diff file, you dont have
+
+9. Create employee_router.ts to register endpoints.
+    import Router from express
+    create a employeeRouter
+    create a get request similar to the one in server.ts
+    export employeeRouter
+
+    in server.ts, 
+        comment out all other requests
+        import employeeRouter
+        register server with employeeRouter using server.use
+
+    basically, router is used to define set of elements that should be executed when the url, in this case localhost:3000/employee . Any further url can come after it and its logic is written in the router file. so change the get and post methods from /employee to the router file
+
+10. Creating middleware
+    create loggermiddleware.ts
+    import { Request, Response, NextFunction } from "express";
+    add status using resp.on("finish", () => {
+        
+    })
+    write implementation and call next function last 
+
+    in server.ts, add server.use(loggerMiddleware) before calling server.get
+
+11. Database connection
+    create a container in docker in postgres 
+    start the container
+    create a db training
+        npm install typeorm reflect-metadata typeorm-naming-strategies
+        npm install pg
+        npm install --save-dev @types/pg
+    in tscofig, add these -> 
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true
+    import client from pg and start coding with client
+
+12. Orm 
+
+
+
+15. Create folder db -> add data-source.ts
+    Create folder entities -> add employee.entitiy.ts
+    Create folder repositories -> add employee.repository.ts
+    Create folder services -> add employee.service.ts
+    Create folder controllers -> add employee.controller.ts
+    Create folder routes -> add employee.router.ts
+
+
+16. employee.repository.ts
+    the reason we are creating this file is because previously, we use orm directly in employeeRouter and do the rest of the functions there. GetRepository is called multiple times (in mine, I have done it once only, but in the production code, if we are following the prev code, we might have to call it multiple time), business logic and db access is on the same file, complex querying might complicate the business logic. 
+    Thus we are creating a custom repository to have custom orm and also separate db access and business logic.
+ 
+17. employee.service.ts
+    This is where we implement the business logic using the custom orms and repositories we created.
+
+18. employee.controller.ts
+    handles incoming request and Responses
+    thus all functions would have req and res as parameters
+    status code needs to be correctly send
+
+19. employee.router.ts
+    create the mapping between all router, controller, services and repositories
+    pass the express route instance to controller
+        
+    in employee.controller.ts
+        accept employeeRouter instance as well in the constructor and accept the routes, http methods and the corresponding function to be called in it. idky we did it here instead in the employeeRouter
+        NOTE: 
+            the function defined in the controller, after using the express router instance in the constructor, should either be defined as lambda function updateEmployee = async(req, resp) => {} or in the constructor, it should be written as router.put("/:id", this.updateEmployee).bind(this)
+
+basically employeeRouter.ts is divided into 4 layers of files with bottom to top represented as repositories --> service --> controller --> router
+
+20. Migrations
+    db/Migrations
+    in data-source, add this  migrations: ["dist/db/migrations/"] //typeorm needs the build version --> the ones in dist
+    run the command -> npx typeorm migration:create db/migrations/create-employee
+    here, the create-employee is the change we are bringing. So name it that
+    this command creates a file in the migrations folder with a timestamp 
+    the file contains definitions of two functions -> 
+        up (to make any changes to the db), 
+        down (to undo any changes done)
+    their parameter is QueryRunner (a raw sql query file)
+
+    write a query to create employee table (we already have it in the db)
+    run the command -> npx typeorm migration:run -d dist/db/data-source.js (orm needs build product)
+    error -> table already exists
+    so let's drop the table
+    run migration again -> employee table created
+    
+    npx typeorm migration:revert -d dist/db/data-source.js --> reverts the migration 
+    
+    npx typeorm migration:generate -d dist/db/data-source.js migration-path --> generates a migration ==> a query for creating the table is automatically generated in the migration file, the entities info is received from the data-source.ts
+    Now if we build and run the migration, an error comes saying that in the first migration we already created a table. Now no table exists
+    then delete the migration file we created, build and run 
+    
+    since build and run migration is used together, write script in package.json
+
+    suppose we want to add new column age to date
+        add the colum info to employee.entities.ts
+        then call generate and provide file path
+        an add-age-column 
+    
+    now we want to keep the record of the address of the employee. Better practice is to keep it as a new entitiy
+        create new entity for address in entities folder
+        add the new entity in data-source (typeorm looks for entity info from data-source)
+    
+    extends abstract ==> the columns in the abstract is common for most entities. We are just avoiding redefining it everytime. In db, all the entities will have the columns, with the different values (Eg: id in employee is not same as id in address)
+
+Error Handler
+
+import {NextFunction } from 'express"
+in the try block, throw error and in catch, use next(error)
+httpException is a class that is created to standardize the way all errors can be returned
