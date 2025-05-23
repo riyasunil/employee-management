@@ -9,7 +9,7 @@ const employeeRouter = express.Router()
 
 const employeeRepository = new EmployeeRepository(datasource.getRepository(Employee))
 const employeeService = new EmployeeService(employeeRepository)
-const empployeeController = new EmployeeController(employeeService, employeeRouter)
+const employeeController = new EmployeeController(employeeService, employeeRouter)
 
 export default employeeRouter
 

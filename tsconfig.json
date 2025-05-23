@@ -8,5 +8,6 @@
         "outDir": "dist",
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true
-    }
+    },
+    "exclude": ["**/*test.ts"] //to exclude creating js of testing files
 }

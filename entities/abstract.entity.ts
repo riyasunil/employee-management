@@ -5,6 +5,7 @@ class Abstract{
     @CreateDateColumn() createdAt: Date;
     @UpdateDateColumn() updatedAt: Date;
     @DeleteDateColumn() deletedAt: Date //soft remove -> want to keep the record, but has to be shown as delete
+    //who columns
 }
 
 export default Abstract
