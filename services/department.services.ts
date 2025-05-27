@@ -14,7 +14,7 @@ class DepartmentService {
       const departments = await this.departmentRepository.findMany();
       logger.info("Successfully retrieved all departments.");
       return departments;
-    } catch (error) {
+        } catch (error) {
       logger.error(`Error retrieving all departments: ${error.message}`);
       throw new HttpException(
         500,
