@@ -57,8 +57,7 @@ describe("EmployeeService", () => {
         deletedAt: null,
       };
 
-            const mockError = "connection to database failed";
-
+      const mockError = "connection to database failed";
 
       when(employeeRepository.findOneById)
         .calledWith(6)
@@ -96,7 +95,7 @@ describe("EmployeeService", () => {
     });
 
     it("getEmployeeByEmail returns error", async () => {
-                  const mockError = "connection to database failed";
+      const mockError = "connection to database failed";
 
       when(employeeRepository.findOneByEmail)
         .calledWith("ria@gmail.com")
@@ -183,96 +182,163 @@ describe("EmployeeService", () => {
 
   //create
 
-  //   describe("Create employee returns the newly created employee details", async() => {
-  //     const mockEmployee = {
-  //         employeeId : "KV123",
-  //         email: "ria@gmail.com",
-  //         name: "ria",
-  //         age: 21,
-  //         password:
-  //           "$2b$10$LZ768WtcoS.pUhh1cHf64Osk265lWEuJf/Qm7V6fQXJUySg1hi89.",
-  //         role: EmployeeRole.HR,
-  //         id: 6,
-  //         createdAt: "2025-05-22T06:29:26.321Z",
-  //         dateOfJoining: "2025-05-22T06:29:26.321Z",
-  //         updatedAt: "2025-05-22T06:29:26.321Z",
-  //         deletedAt: null,
-  //         address : {
-  //           line1 : "add1",
-  //           line2 : "add2",
-  //           houseNo : "123",
-  //           pincode : "123456"
-  //         },
-  //         department : "HR",
-  //         status : EmployeeStatus.ACTIVE,
-  //         experience : 1
-  //       };
-
-  //       const mockEmployeeDepartment = new Department();
-
-  //       const mockEmployeeAddress = new Address()
-  //       mockEmployeeAddress.line1 = mockEmployee.address.line1
-  //       mockEmployeeAddress.line2 = mockEmployee.address.line2
-  //       mockEmployeeAddress.houseNo = mockEmployee.address.houseNo
-  //       mockEmployeeAddress.pincode = mockEmployee.address.pincode
-
-  //       const
-
-  // const mockError = "Connection to database failed";
-
-  // when(employeeRepository.create).calledWith(mockEmployee).mockRejectedValue(mockEmployee);
-  //       await expect(employeeService.createEmployee(mockEmployee.employeeId, mockEmployee.name, mockEmployee.email, mockEmployee.age, mockEmployeeAddress, mockEmployee.password, mockEmployee.role, mockEmployee.department, mockEmployee.status, mockEmployee.dateOfJoining, mockEmployee.experience)).rejects.toBeInstanceOf(HttpException);
-  //       expect(employeeRepository.create).toHaveBeenCalledWith(mockEmployee)
-  //   })
 
   //update
-  
-//   describe("updateEmployee", () => {
-//     it("update employee details returns the updated employee", async () => {
 
-//        const mockEmployeeAddress = new Address()
-//         mockEmployeeAddress.line1 = "add1"
-//         mockEmployeeAddress.line2 = "add2"
-//         mockEmployeeAddress.houseNo = "123"
-//         mockEmployeeAddress.pincode = "123456"
+  describe("updateEmployee", () => {
+    it("updateEmployee updates employee successfully", async () => {
+      const id = 1;
+      const prevEmployee = {
+        id,
+        name: "OldName",
+        email: "old@example.com",
+        role: EmployeeRole.HR,
+        address: {
+          line1: "OldLine 1",
+          line2: "OldLine 2",
+          houseNo: "123",
+          pincode: "000000",
+        },
+      };
 
+      const newName = "NewName";
+      const newEmail = "new@example.com";
+      const newRole = EmployeeRole.MANAGER;
+      const newAddress = {
+        line1: "NewLine 1",
+        line2: "New Line 2",
+        houseNo: "456",
+        pincode: "111111",
+      };
 
-//             const mockEmployee = {
-//         email: "ria@gmail.com",
-//         name: "ria",
-//         age: 21,
-//         password:
-//           "$2b$10$LZ768WtcoS.pUhh1cHf64Osk265lWEuJf/Qm7V6fQXJUySg1hi89.",
-//         role: EmployeeRole.HR,
-//         id: 6,
-//         createdAt: "2025-05-22T06:29:26.321Z",
-//         updatedAt: "2025-05-22T06:29:26.321Z",
-//         deletedAt: null,
-//         address : mockEmployeeAddress
-//       };
+      const mockEmployeeAddress = new Address();
+      mockEmployeeAddress.line1 = newAddress.line1;
+      mockEmployeeAddress.line2 = newAddress.line2;
+      mockEmployeeAddress.houseNo = newAddress.houseNo;
+      mockEmployeeAddress.pincode = newAddress.pincode;
 
-     
+      const updatedEmployee = {
+        ...prevEmployee,
+        name: newName,
+        email: newEmail,
+        role: newRole,
+        address: newAddress,
+      };
 
-//       const updatedMockEmployee = {
-//        ...mockEmployee, email : "updated@gmail.com"
-//       };
+      when(employeeRepository.findOneById)
+        .calledWith(id)
+        .mockResolvedValue({ ...prevEmployee });
+      when(employeeRepository.update)
+        .calledWith(id, expect.any(Object))
+        .mockResolvedValue(undefined);
 
-//       const updatedEmployeeObject = {
-//       ...mockEmployee,
-//       email: "updated@gmail.com",
-//       name: "ria",
-//       role: EmployeeRole.HR,
-//       address: mockEmployeeAddress,
-//     };
+      const result = await employeeService.updateEmployee(
+        id,
+        newName,
+        newEmail,
+        newRole,
+        mockEmployeeAddress
+      );
 
-//     when(employeeRepository.findOneById)
-//       .calledWith(mockEmployee.id)
-//       .mockResolvedValue(mockEmployee);
-//       when(employeeRepository.update).calledWith(mockEmployee.id, mockEmployee.name, "updated@gmail.com", mockEmployee.role, mockEmployee.address).mockReturnValue(updatedMockEmployee);
-//       const res = await employeeService.updateEmployee(mockEmployee.id, mockEmployee.name, "updated@gmail.com", mockEmployee.role, mockEmployee.address);
-// expect(employeeRepository.update).toHaveBeenCalledWith(mockEmployee.id, mockEmployee.name, "updated@gmail.com", mockEmployee.role, mockEmployee.address)
-// expect(res).toStrictEqual(updatedMockEmployee)
-//     });
-//   });
-  //delete
+      expect(employeeRepository.findOneById).toHaveBeenCalledWith(id);
+      expect(employeeRepository.update).toHaveBeenCalledWith(
+        id,
+        expect.objectContaining({
+          id,
+          name: newName,
+          email: newEmail,
+          role: newRole,
+          address: expect.objectContaining(newAddress),
+        })
+      );
+
+      expect(result).toMatchObject(updatedEmployee);
+    });
+
+    it("updateEmployee throws ERROR when employee does not exist", async () => {
+      const id = 1;
+      const newName = "NeWName";
+      const newEmail = "new@example.com";
+      const newRole = EmployeeRole.DEV;
+      const newAddress = {
+        line1: "LIN21",
+        line2: "LINE22",
+        houseNo: "456",
+        pincode: "111111",
+      };
+
+      const mockEmployeeAddress = new Address();
+      mockEmployeeAddress.line1 = newAddress.line1;
+      mockEmployeeAddress.line2 = newAddress.line2;
+      mockEmployeeAddress.houseNo = newAddress.houseNo;
+      mockEmployeeAddress.pincode = newAddress.pincode;
+
+      when(employeeRepository.findOneById)
+        .calledWith(id)
+        .mockResolvedValue(null);
+
+      await expect(
+        employeeService.updateEmployee(
+          id,
+          newName,
+          newEmail,
+          newRole,
+          mockEmployeeAddress
+        )
+      ).rejects.toBeInstanceOf(HttpException);
+
+      expect(employeeRepository.update).not.toHaveBeenCalled();
+    });
+
+    it("updateEmployee fails to update employee", async () => {
+      const id = 1;
+      const prevEmployee = {
+        id,
+        name: "Old Name",
+        email: "old@example.com",
+        role: EmployeeRole.HR,
+        address: {
+          line1: "Old Line 1",
+          line2: "Old Line 2",
+          houseNo: "123",
+          pincode: "000000",
+        },
+      };
+
+      const newName = "New Name";
+      const newEmail = "new@example.com";
+      const newRole = EmployeeRole.UX;
+      const newAddress = {
+        line1: "New Line 1",
+        line2: "New Line 2",
+        houseNo: "456",
+        pincode: "111111",
+      };
+
+      const mockEmployeeAddress = new Address();
+      mockEmployeeAddress.line1 = newAddress.line1;
+      mockEmployeeAddress.line2 = newAddress.line2;
+      mockEmployeeAddress.houseNo = newAddress.houseNo;
+      mockEmployeeAddress.pincode = newAddress.pincode;
+
+      const error = new Error("DB update failed");
+
+      when(employeeRepository.findOneById)
+        .calledWith(id)
+        .mockResolvedValue({ ...prevEmployee });
+      when(employeeRepository.update)
+        .calledWith(id, expect.any(Object))
+        .mockRejectedValue(error);
+
+      await expect(
+        employeeService.updateEmployee(
+          id,
+          newName,
+          newEmail,
+          newRole,
+          mockEmployeeAddress
+        )
+      ).rejects.toBeInstanceOf(HttpException);
+    });
+  });
 });

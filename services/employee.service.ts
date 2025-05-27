@@ -140,7 +140,7 @@ class EmployeeService {
       logger.info(
         `Employee ${prevEmployeeName} exists with ID :${id} updated to ${name}`
       );
-      return employeeExist
+      return employeeExist;
     } catch (error) {
       logger.error(`Error updating employee with ID :${id} : ${error.message}`);
       throw new HttpException(
@@ -167,6 +167,8 @@ class EmployeeService {
       );
     }
   }
+
+  
 }
 
 export default EmployeeService;
