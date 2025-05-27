@@ -5,7 +5,9 @@ import bcrypt from "bcrypt";
 import Department from "../entities/department.entity";
 import DepartmentService from "./department.services";
 import HttpException from "../exceptions/httpException";
+import { LoggerService } from "./loggerService";
 
+const logger = LoggerService.getInstance('service()');
 class EmployeeService {
     constructor(private employeeRepository : EmployeeRepository){} //these are dependencies
 
@@ -44,6 +46,7 @@ class EmployeeService {
     async getEmployeeById(id:number) : Promise<Employee>{
          let employee = this.employeeRepository.findOneById(id);
         if(!employee){
+             logger.error("Employee not found")
            throw new Error("Employee not found")
         }
         return employee;
@@ -58,6 +61,7 @@ class EmployeeService {
     async updateEmployee(id: number, name:string, email:string, role:EmployeeRole, address:Address){
         const employeeExist = await this.employeeRepository.findOneById(id)
         if (employeeExist){
+             logger.info("Employee scheduled for updation")
             employeeExist.email = email;
             employeeExist.name = name;
             employeeExist.role = role;
@@ -73,6 +77,7 @@ class EmployeeService {
         const employeeExist = await this.employeeRepository.findOneById(id)
         if (employeeExist){
             //await this.employeeRepository.delete(id)
+            logger.info("Employee scheduled for deletion")
             await this.employeeRepository.remove(employeeExist)
         }
     }

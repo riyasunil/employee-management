@@ -1,6 +1,5 @@
-// validators/is-valid-department.validator.ts
 import { registerDecorator, ValidationOptions, ValidatorConstraint, ValidatorConstraintInterface, ValidationArguments } from 'class-validator';
-import datasource from '../db/data-source'; // Your TypeORM data source
+import datasource from '../db/data-source'; 
 import Department from '../entities/department.entity';
 
 @ValidatorConstraint({ name: 'isValidDepartment', async: true })
@@ -10,10 +9,9 @@ export class IsValidDepartmentConstraint implements ValidatorConstraintInterface
     
     const departmentRepository = datasource.getRepository(Department);
     
-    // Check if department exists and is not soft-deleted
     const department = await departmentRepository.findOne({
       where: { id: departmentId },
-      withDeleted: false, // This ensures soft-deleted records are excluded
+      withDeleted: false, 
     });
     
     return !!department;

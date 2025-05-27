@@ -24,8 +24,10 @@ export default class DepartmentController {
     async getAllDepartments(req : Request, res: Response){
         try{
             const departments = await this.departmentService.getAllDepartments()
+            logger.info("Fetched Departments")
             res.status(200).send(departments); //send res of departments
         }catch(error){
+            logger.error(JSON.stringify(error))
             res.status(400).send(JSON.stringify(error))
         }
     }
