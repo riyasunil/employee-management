@@ -12,7 +12,7 @@ class EmployeeRepository {
     }
 
     async findMany() : Promise<Employee[]> {
-        return this.repository.find({relations : { address : true}});
+        return this.repository.find({relations : { address : true, department : true}});
     }
 
     async findOneById(id : number) : Promise<Employee> {

@@ -11,13 +11,15 @@ import departmentRouter from "./routes/departments.router";
 
 const { Client } = require('pg');
 const server = express();
+var cors = require('cors')
+server.use(cors())
 const logger = LoggerService.getInstance('server()');
 
 server.use(express.json());
 server.use(loggerMiddleware);
 server.use("/employee", authenticationMiddleware, employeeRouter);
 server.use("/auth", authRouter);
-server.use("/department", departmentRouter)
+server.use("/department", authenticationMiddleware, departmentRouter)
 server.use(authorizationMiddleware);
 server.use(errorMiddleware) // we need this to happen after employeeRouter has been called
 //ie, the error from employeeRouter is then passed to this 

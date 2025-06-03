@@ -1,6 +1,7 @@
 import { IsArray, IsEnum, IsOptional, IsPositive, IsString } from "class-validator";
 import { CreateEmployeeDto } from "./createEmployeeDto";
 import { UpdateAddressDto } from "./updateAddressDto";
+import { EmployeeStatus } from "../entities/employee.entity";
 
 export class UpdateEmployeeDto{
     @IsString()
@@ -18,4 +19,13 @@ export class UpdateEmployeeDto{
 
     @IsOptional()
     address? : UpdateAddressDto;
+
+    @IsOptional()
+    status? : EmployeeStatus;
+
+    @IsOptional()
+    departmentId? : number;
+
+    @IsOptional()
+    password? : string;
 }

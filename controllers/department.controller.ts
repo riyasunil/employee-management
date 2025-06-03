@@ -15,7 +15,7 @@ export default class DepartmentController {
         logger.info('Deparment controller initialized')
         router.get("/", this.getAllDepartments.bind(this))
         router.post("/", this.createDepartment.bind(this))
-        router.put("/", this.updateDepartment.bind(this))
+        router.put("/:id", this.updateDepartment.bind(this))
         router.get("/:id", this.getDepartmentById.bind(this))
         router.get("/:id", this.getDepartmentByName.bind(this))
         router.delete("/:id", this.deleteDepartment.bind(this))

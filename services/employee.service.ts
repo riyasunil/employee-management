@@ -115,26 +115,52 @@ class EmployeeService {
 
   async updateEmployee(
     id: number,
-    name: string,
-    email: string,
-    role: EmployeeRole,
-    address: Address
+    name?: string,
+    email?: string,
+    role?: EmployeeRole,
+    address?: Address,
+    status?: EmployeeStatus,
+    departmentId?: Department,
+    password?: string,
+    age?: number,
+    dateOfJoining?: string,
+    experience?: number
   ) {
     try {
       const employeeExist = await this.employeeRepository.findOneById(id);
+      console.log("name", name);
+      console.log("email", email);
+      console.log("address", address);
+      console.log("role", role);
+      console.log("status", status);
+      console.log("dateofjoining", dateOfJoining);
+      console.log("employeeExist: ", employeeExist.address);
       if (!employeeExist) {
         logger.error(`Employee with ID ${id} not found for update.`);
         throw new HttpException(404, `Employee with ID ${id} not found`);
       }
 
       const prevEmployeeName = employeeExist.name;
-      employeeExist.name = name;
-      employeeExist.email = email;
-      employeeExist.role = role;
-      employeeExist.address.line1 = address.line1;
-      employeeExist.address.line2 = address.line2;
-      employeeExist.address.houseNo = address.houseNo;
-      employeeExist.address.pincode = address.pincode;
+
+      if (name) employeeExist.name = name;
+      if (email) employeeExist.email = email;
+      if (role) employeeExist.role = role;
+      if (address) {
+        employeeExist.address.line1 = address.line1;
+        employeeExist.address.line2 = address.line2;
+        employeeExist.address.houseNo = address.houseNo;
+        employeeExist.address.pincode = address.pincode;
+      }
+      if (status) employeeExist.status = status;
+      if (age) employeeExist.age = age;
+      if (departmentId) employeeExist.department = departmentId;
+      if (password.length > 0 && password)
+        employeeExist.password = await bcrypt.hash(password, 10);
+
+      if (dateOfJoining) employeeExist.dateOfJoining = new Date(dateOfJoining);
+      if (experience) employeeExist.experience = experience;
+
+      logger.info(`employee at update ${employeeExist}`);
 
       await this.employeeRepository.update(id, employeeExist);
       logger.info(
@@ -167,8 +193,6 @@ class EmployeeService {
       );
     }
   }
-
-  
 }
 
 export default EmployeeService;
